@@ -1,87 +1,70 @@
 ---
 name: github-release-pipeline
-description: Use when setting up cross-platform build and release automation with GitHub Actions. Covers gh CLI operations, workflow configuration for Windows/macOS/Linux, release publishing, and CI/CD troubleshooting.
+description: 用于配置 GitHub Actions 跨平台构建和自动发布。涵盖 gh CLI 操作、Windows/macOS/Linux 工作流配置、Release 发布和 CI/CD 故障排查。
 ---
 
-# GitHub Release Pipeline
+# GitHub 跨平台发布流水线
 
-Automate cross-platform builds and release publishing using gh CLI and GitHub Actions. Supports any project that builds platform-specific binaries (Tauri, Electron, Go, Rust native, etc.).
+使用 gh CLI 和 GitHub Actions 实现跨平台构建和 Release 自动发布。适用于任何需要构建平台特定产物的项目（Tauri、Electron、Go、Rust 原生等）。
 
-**Why gh + GitHub Actions:** Zero external services needed. Everything runs on GitHub infrastructure. One `gh release create` triggers builds across all platforms, and artifacts land automatically on the release page.
+**为什么选择 gh + GitHub Actions：** 无需外部服务，全部运行在 GitHub 基础设施上。一条 `gh release create` 命令即可触发所有平台构建，产物自动上传到 Release 页面。
 
-**Core principle:** Tag triggers workflow, workflow builds and uploads, user downloads from release page. No manual steps after initial setup.
+**核心流程：** 打标签触发工作流，工作流构建并上传产物，用户从 Release 页面下载。初始设置完成后无需手动操作。
 
-## When to Use
+## 安装
 
-```dot
-digraph when_to_use {
-  "Need cross-platform builds?" [shape=diamond];
-  "Hosting on GitHub?" [shape=diamond];
-  "Want automated releases?" [shape=diamond];
-  "github-release-pipeline" [shape=box];
-  "Manual builds + upload" [shape=box];
-
-  "Need cross-platform builds?" -> "Hosting on GitHub?" [label="yes"];
-  "Need cross-platform builds?" -> "Manual builds + upload" [label="no"];
-  "Hosting on GitHub?" -> "Want automated releases?" [label="yes"];
-  "Hosting on GitHub?" -> "Use GitHub Releases only" [label="no"];
-  "Want automated releases?" -> "github-release-pipeline" [label="yes"];
-  "Want automated releases?" -> "Manual builds + upload" [label="no - too much manual work"];
-}
-```
-
-## Installation
-
-Copy this skill to your project's `skills/` or `.claude/skills/` directory:
+将 skill 复制到项目的 `skills/` 或 `.claude/skills/` 目录：
 
 ```bash
-# Clone the project to get the skill
-git clone https://github.com/cyforkk/project-packer.git
-cp -r project-packer/skills/github-release-pipeline your-project/skills/
+git clone https://github.com/cyforkk/github-release-pipeline.git
+# 中文用户
+cp github-release-pipeline/SKILL.md your-project/skills/github-release-pipeline/
+# 英文用户
+cp github-release-pipeline/SKILL.en.md your-project/skills/github-release-pipeline/
 ```
 
-After installation, invoke with: `Use the github-release-pipeline skill`
+安装后，对 Claude Code 说：`使用 github-release-pipeline skill`
 
-## Prerequisites
+## 前置要求
 
-- gh CLI installed: `brew install gh` / `winget install GitHub.cli`
-- Authenticated: `gh auth login`
-- Repository exists: `gh repo create <name> --public`
+- 安装 gh CLI：`brew install gh` / `winget install GitHub.cli`
+- 已认证：`gh auth login`
+- 仓库已存在：`gh repo create <name> --public`
 
-## Phase 1: Initial Setup
+## 阶段一：初始化配置
 
-### Step 1: Authenticate gh CLI
+### 步骤 1：认证 gh CLI
 
 ```bash
 gh auth login
 ```
 
-Select "GitHub.com" → "HTTPS" → "Login with browser".
+选择 "GitHub.com" -> "HTTPS" -> "Login with browser"。
 
-Verify:
+验证：
 ```bash
 gh auth status
 ```
 
-### Step 2: Create Repository (if needed)
+### 步骤 2：创建仓库（如需要）
 
 ```bash
-gh repo create <repo-name> --description "Description" --public
+gh repo create <repo-name> --description "描述" --public
 ```
 
-### Step 3: Configure Workflow Permissions
+### 步骤 3：配置工作流权限
 
-Required for the `GITHUB_TOKEN` to upload release assets.
+`GITHUB_TOKEN` 需要写入权限才能上传 Release 产物。
 
-GitHub web UI → Repository → Settings → Actions → General → Workflow permissions → **Read and write**
+GitHub 网页 -> 仓库 -> Settings -> Actions -> General -> Workflow permissions -> **Read and write**
 
-### Step 4: Create Workflow File
+### 步骤 4：创建工作流文件
 
-Create `.github/workflows/release.yml` using the template in Phase 2 below.
+在 `.github/workflows/release.yml` 中创建，模板见阶段二。
 
-## Phase 2: Workflow Template
+## 阶段二：工作流模板
 
-### Cross-Platform Build Matrix
+### 跨平台构建矩阵
 
 ```yaml
 name: Release
@@ -158,120 +141,120 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-### Adapt to Your Project
+### 适配你的项目
 
-Replace these values for your project:
+替换以下占位符：
 
-| Placeholder | What to set |
+| 占位符 | 设置为 |
 |---|---|
-| `npm run build` | Your build command (e.g., `npm run tauri build`, `make`, `go build`) |
-| `npm run build -- --target ...` | Build with target triple for cross-compilation |
-| `npm run build -- --bundles appimage` | Override bundle type for Linux |
-| `target/release/app.exe` | Path to your Windows binary |
-| `target/*/release/bundle/dmg/*.dmg` | Path to your macOS dmg |
-| `target/release/bundle/appimage/*.AppImage` | Path to your Linux AppImage |
-| `libwebkit2gtk-4.1-dev ...` | Linux deps for your framework (remove if not needed) |
+| `npm run build` | 你的构建命令（如 `npm run tauri build`、`make`、`go build`） |
+| `npm run build -- --target ...` | 交叉编译的目标三元组 |
+| `npm run build -- --bundles appimage` | Linux 下覆盖 bundle 类型 |
+| `target/release/app.exe` | Windows 产物路径 |
+| `target/*/release/bundle/dmg/*.dmg` | macOS 产物路径 |
+| `target/release/bundle/appimage/*.AppImage` | Linux 产物路径 |
+| `libwebkit2gtk-4.1-dev ...` | Linux 依赖（不需要则删除） |
 
-## Phase 3: Publishing a Release
+## 阶段三：发布流程
 
 ```bash
-# 1. Commit and push your changes
-git add . && git commit -m "feat: description" && git push
+# 1. 提交代码
+git add . && git commit -m "feat: 描述" && git push
 
-# 2. Create and push a version tag
+# 2. 创建并推送版本标签
 git tag v1.0.0 && git push origin v1.0.0
 
-# 3. Create the release (triggers CI)
+# 3. 创建 Release（触发 CI）
 gh release create v1.0.0 \
   --title "v1.0.0" \
-  --notes "## What's New\n- Feature A\n- Feature B\n\n## Downloads\n- Windows: app-x64.exe\n- macOS: app-x64.dmg / app-aarch64.dmg\n- Linux: app-x64.AppImage"
+  --notes "## 更新内容\n- 功能A\n- 功能B\n\n## 下载\n- Windows: app-x64.exe\n- macOS: app-x64.dmg / app-aarch64.dmg\n- Linux: app-x64.AppImage"
 
-# 4. Monitor build progress
+# 4. 查看构建进度
 gh run list
 
-# 5. Check build logs if something fails
+# 5. 查看失败日志
 gh run view <run-id> --log-failed
 ```
 
-## Troubleshooting
+## 故障排查
 
-### Issue: "Resource not accessible by integration"
+### 问题：Resource not accessible by integration
 
-**Symptom:** Release upload fails with `Resource not accessible by integration`
+**现象：** Release 上传报错 `Resource not accessible by integration`
 
-**Cause:** Default `GITHUB_TOKEN` has read-only permissions
+**原因：** 默认 `GITHUB_TOKEN` 只有读权限
 
-**Fix:** Repository → Settings → Actions → General → Workflow permissions → **Read and write**
+**解决：** 仓库 Settings -> Actions -> General -> Workflow permissions -> **Read and write**
 
-### Issue: "unexpected argument" on build command
+### 问题：构建参数报错 unexpected argument
 
-**Symptom:** `npm run build --target aarch64-apple-darwin` fails
+**现象：** `npm run build --target aarch64-apple-darwin` 失败
 
-**Cause:** `--target` must be passed through `--` to the underlying build tool
+**原因：** `--target` 需要通过 `--` 传给底层构建工具
 
-**Fix:**
+**解决：**
 ```yaml
 run: npm run build -- --target aarch64-apple-darwin
 ```
 
-### Issue: "--bundle" unrecognized
+### 问题：--bundle 参数无法识别
 
-**Symptom:** `--bundle appimage` fails with `unexpected argument`
+**现象：** `--bundle appimage` 报错 `unexpected argument`
 
-**Cause:** CLI uses plural form `--bundles`
+**原因：** CLI 使用复数形式 `--bundles`
 
-**Fix:**
+**解决：**
 ```yaml
 run: npm run build -- --bundles appimage
 ```
 
-### Issue: macOS dmg not in release
+### 问题：macOS dmg 未出现在 Release
 
-**Symptom:** macOS build succeeds but no dmg on release page
+**现象：** macOS 构建成功但 Release 页面没有 dmg
 
-**Cause:** Bundle targets not configured in project config
+**原因：** 项目配置中未包含 dmg 格式
 
-**Fix:** Add `dmg` to your project's bundle targets configuration (e.g., `tauri.conf.json` → `bundle.targets`)
+**解决：** 在项目 bundle targets 配置中添加 `dmg`（如 `tauri.conf.json` -> `bundle.targets`）
 
-### Issue: Action parameter name changed
+### 问题：Action 参数名变更
 
-**Symptom:** `softprops/action-gh-release` errors on `tag` input
+**现象：** `softprops/action-gh-release` 报错 `Unexpected input(s) 'tag'`
 
-**Cause:** Parameter renamed from `tag` to `tag_name` in v2
+**原因：** v2 中 `tag` 参数已更名为 `tag_name`
 
-**Fix:**
+**解决：**
 ```yaml
 with:
   tag_name: ${{ github.ref_name }}
 ```
 
-### Issue: Workflow not triggering
+### 问题：工作流未触发
 
-**Symptom:** Push doesn't start the workflow
+**现象：** 推送代码后工作流不执行
 
-**Cause:** Workflow file may be in wrong location or have YAML errors
+**原因：** 文件位置错误或 YAML 语法问题
 
-**Fix:**
-- Ensure file is at `.github/workflows/release.yml`
-- Validate YAML syntax
-- Check workflow is enabled in Repository → Settings → Actions
+**解决：**
+- 确保文件在 `.github/workflows/release.yml`
+- 验证 YAML 语法
+- 检查仓库 Settings -> Actions 中工作流是否启用
 
-## Best Practices
+## 最佳实践
 
-1. **Use `fail-fast: false`** in matrix strategy so one platform failure doesn't cancel others
-2. **Pin action versions** (`@v4`, `@v2`) to avoid breaking changes
-3. **Use `--` separator** when passing flags through npm scripts to underlying tools
-4. **Test locally first** with `act` CLI before pushing
-5. **Use semantic versioning** for tags: `v1.0.0`, `v1.1.0`, `v2.0.0`
-6. **Keep release notes concise** with download instructions per platform
-7. **Set `GITHUB_TOKEN` explicitly** in upload step for clarity
+1. **使用 `fail-fast: false`**：某个平台失败不影响其他平台继续构建
+2. **锁定 Action 版本**（`@v4`、`@v2`）：避免破坏性变更
+3. **使用 `--` 分隔符**：通过 npm 脚本传参给底层工具时
+4. **本地先测试**：用 `act` CLI 在本地运行 workflow
+5. **语义化版本标签**：`v1.0.0`、`v1.1.0`、`v2.0.0`
+6. **Release 说明简洁**：按平台列出下载项
+7. **显式设置 `GITHUB_TOKEN`**：在上传步骤中明确声明
 
-## Integration
+## 关联工具
 
-**Companion skills:**
-- **superpowers:writing-plans** - Use when planning the release features before building
-- **superpowers:subagent-driven-development** - Use for building individual platform targets in parallel
+**配套 skill：**
+- **superpowers:writing-plans** — 构建前规划功能时使用
+- **superpowers:subagent-driven-development** — 多平台并行构建时使用
 
-**Related CLI tools:**
-- `gh` - GitHub CLI for repository and release management
-- `act` - Run GitHub Actions workflows locally for testing
+**相关 CLI 工具：**
+- `gh` — GitHub CLI，仓库和 Release 管理
+- `act` — 本地运行 GitHub Actions 工作流
