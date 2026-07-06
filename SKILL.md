@@ -16,7 +16,7 @@ description: 用于配置 GitHub Actions 跨平台构建和自动发布。涵盖
 将 skill 复制到项目的 `skills/` 或 `.claude/skills/` 目录：
 
 ```bash
-git clone https://github.com/cyforkk/github-release-pipeline.git
+git clone https://github.com/cyforkk/skill-github-release.git
 # 中文用户
 cp github-release-pipeline/SKILL.md your-project/skills/github-release-pipeline/
 # 英文用户
