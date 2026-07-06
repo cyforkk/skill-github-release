@@ -14,7 +14,12 @@ Claude Code skill — 跨平台构建与 GitHub Release 自动发布流水线。
 
 ```bash
 git clone https://github.com/cyforkk/skill-github-release.git
+
+# macOS / Linux
 cp skill-github-release/SKILL.md your-project/skills/skill-github-release/
+
+# Windows (CMD / PowerShell)
+copy skill-github-release\SKILL.md your-project\skills\skill-github-release\
 ```
 
 ## 使用方式
