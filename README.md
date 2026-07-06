@@ -1,4 +1,4 @@
-# github-release-pipeline
+# skill-github-release
 
 Claude Code skill — 跨平台构建与 GitHub Release 自动发布流水线。
 
@@ -21,7 +21,7 @@ cp skill-github-release/SKILL.md your-project/skills/skill-github-release/
 
 安装后对 Claude Code 说：
 
-> 使用 github-release-pipeline skill
+> 使用 skill-github-release skill
 
 ## 前置要求
 

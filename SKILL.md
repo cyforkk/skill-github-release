@@ -1,5 +1,5 @@
 ---
-name: github-release-pipeline
+name: skill-github-release
 description: 用于配置 GitHub Actions 跨平台构建和自动发布。涵盖 gh CLI 操作、Windows/macOS/Linux 工作流配置、Release 发布和 CI/CD 故障排查。
 ---
 
@@ -20,7 +20,7 @@ git clone https://github.com/cyforkk/skill-github-release.git
 cp skill-github-release/SKILL.md your-project/skills/skill-github-release/
 ```
 
-安装后，对 Claude Code 说：`使用 github-release-pipeline skill`
+安装后，对 Claude Code 说：`使用 skill-github-release skill`
 
 ## 前置要求
 
