@@ -12,6 +12,8 @@ Claude Code skill — 跨平台构建与 GitHub Release 自动发布流水线。
 
 ## 安装方式
 
+**方式一：命令安装**
+
 ```bash
 git clone https://github.com/cyforkk/skill-github-release.git
 
@@ -22,11 +24,21 @@ cp skill-github-release/SKILL.md your-project/skills/skill-github-release/
 copy skill-github-release\SKILL.md your-project\skills\skill-github-release\
 ```
 
+**方式二：手动复制**
+
+将 `SKILL.md` 文件复制到项目的 `skills/skill-github-release/` 或 `.claude/skills/skill-github-release/` 目录下。
+
 ## 使用方式
 
-安装后对 Claude Code 说：
+安装后，对 Claude Code 说：
 
 > 使用 skill-github-release skill
+
+或使用斜杠命令：
+
+```
+/skill-github-release
+```
 
 ## 前置要求
 
