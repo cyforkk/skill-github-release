@@ -17,10 +17,7 @@ description: 用于配置 GitHub Actions 跨平台构建和自动发布。涵盖
 
 ```bash
 git clone https://github.com/cyforkk/skill-github-release.git
-# 中文用户
-cp github-release-pipeline/SKILL.md your-project/skills/github-release-pipeline/
-# 英文用户
-cp github-release-pipeline/SKILL.en.md your-project/skills/github-release-pipeline/
+cp skill-github-release/SKILL.md your-project/skills/skill-github-release/
 ```
 
 安装后，对 Claude Code 说：`使用 github-release-pipeline skill`
